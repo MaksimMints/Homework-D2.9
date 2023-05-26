@@ -1,0 +1,87 @@
+from news.models import *
+u1 = User.objects.create_user(username='Den')   #пользователь №1
+u2 = User.objects.create_user(username='Tom')   #пользователь №2
+Author.objects.create(authorUser=u1)            #автор №1 (он же пользователь №1)
+Author.objects.create(authorUser=u2)            #автор №2 (он же пользователь №2)
+Category.objects.create(name='IT')              #категория №1
+Category.objects.create(name='Sport')           #категория №2
+Category.objects.create(name='Policy')          #категория №3
+Category.objects.create(name='Culture')         #категория №4
+author = Author.objects.get(id=1)
+Post.objects.create(author=author, title='Policy in sport?!', text = 'somebigtext about policy in sport')
+author2 = Author.objects.get(id=2)
+Post.objects.create(author=author2, title='Cinema or Theater?', text = 'somebigtext about cinema and theater')
+Post.objects.create(author=author, categoryType = 'NW', title='What is new in IT', text='somebigtext about news in IT')
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=2))
+Post.objects.get(id=1).postCategory.add(Category.objects.get(id=3))
+Post.objects.get(id=2).postCategory.add(Category.objects.get(id=4))
+Post.objects.get(id=3).postCategory.add(Category.objects.get(id=1))
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=1).authorUser,
+    commentText='bigtextcomment to Post1')
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=2).authorUser,
+    commentText='bigtextcomment User2 to Post1')
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=1).authorUser,
+    commentText='bigtextcomment to Post2')
+Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=2).authorUser,
+    commentText='bigtextcomment User2 to Post3')
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=4).dislike()
+Comment.objects.get(id=4).dislike()
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).dislike()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=3).dislike()
+
+>>> a1=Author.objects.get(id=1)
+>>> a1.update_rating()
+>>> a1.ratingAuthor
+1
+>>> a2=Author.objects.get(id=2)
+>>> a2.update_rating()
+>>> a2.ratingAuthor
+3
+
+>>> a=Author.objects.order_by('-ratingAuthor')[:1]
+>>> for i in a:
+...     i.ratingAuthor
+...     i.authorUser.username
+...
+3
+'Tom'
+
+>>> c=Post.objects.filter(categoryType='AR').order_by('-rating')[:1]
+>>> for i in c:
+...     i.dateCreation
+...     i.author.authorUser.username
+...     i.rating
+...     i.title
+...     i.preview()
+...
+datetime.date(2023, 5, 23)
+'Tom'
+2
+'Cinema or Theater?'
+'somebigtext about cinema and theater...'
+
+>>> t=Comment.objects.filter(commentPost=c)
+>>> for v in t:
+...     v.dateCreation
+...     v.commentUser.username
+...     v.rating
+...     v.commentText
+...
+datetime.date(2023, 5, 23)
+'Den'
+2
+'bigtextcomment User1 to Post2'
+
+
+
+
+
+
