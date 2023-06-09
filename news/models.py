@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -19,6 +20,8 @@ class Author(models.Model):
         self.ratingAuthor = pRat * 3 + cRat
         self.save()
 
+    def __str__(self):
+        return self.authorUser.username.title()
 
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -32,8 +35,8 @@ class Post(models.Model):
     NEWS = 'NW'
     ARTICLE = 'AR'
     CATEGORY_CHOICES = (
-        (NEWS, 'Новость'),
-        (ARTICLE, 'Статья')
+        (NEWS, 'News'),
+        (ARTICLE, 'Article')
     )
     categoryType = models.CharField(max_length=2, choices=CATEGORY_CHOICES, default=ARTICLE)
     dateCreation = models.DateField(auto_now_add=True)
@@ -55,6 +58,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title.title()}:  {self.text[:20]}'
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
