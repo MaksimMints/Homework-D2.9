@@ -9,7 +9,7 @@ class NewsForm(forms.ModelForm):
         fields = [
             'title',
             'text',
-            'author',
+            # 'author',
         ]
 
 class ArticleForm(forms.ModelForm):
@@ -18,7 +18,7 @@ class ArticleForm(forms.ModelForm):
         fields = [
             'title',
             'text',
-            'author'
+            # 'author'
         ]
 
     # def clean(self):

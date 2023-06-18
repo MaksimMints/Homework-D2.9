@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -30,7 +31,9 @@ class PostDetail(DetailView):
     template_name = 'post.html'
     context_object_name = 'post'
 
-class NewsCreate(CreateView):
+
+class NewsCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     # Указываем нашу разработанную форму
     form_class = NewsForm
     # модель товаров
@@ -41,9 +44,12 @@ class NewsCreate(CreateView):
     def form_valid(self, form):
         news = form.save(commit=False)
         news.categoryType = news
+        form.instance.author = self.request.user.author
         return super().form_valid(form)
 
-class ArticleCreate(CreateView):
+
+class ArticleCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     form_class = ArticleForm
     model = Post
     template_name = 'articles_create.html'
@@ -51,16 +57,19 @@ class ArticleCreate(CreateView):
     def form_valid(self, form):
         article = form.save(commit=False)
         article.categoryType = article
+        form.instance.author = self.request.user.author
         return super().form_valid(form)
 
 
-class ArticleUpdate(UpdateView):
+class ArticleUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = ArticleForm
     model = Post
     template_name = 'articles_edit.html'
 
 
-class NewsUpdate(UpdateView):
+class NewsUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     form_class = NewsForm
     model = Post
     template_name = 'news_edit.html'

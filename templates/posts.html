@@ -16,14 +16,25 @@ Posts
         {{ filterset.form.as_p }}
         <input type="submit" value="Search" />
     </form>
-
     <hr>
+
+    {# Теперь будем проверять не request.user.is_authenticated, на конкретные права #}
+    {% if perms.news.add_post %}
+    <a href="{% url 'news_create' %}">Add News</a>
+    <hr>
+    <a href="{% url 'articles_create' %}">Add Article</a>
+    {% endif %}
+
     {% if posts %}
         <table>
             <tr>
                 <td>Title</td>
                 <td>DateCreation</td>
                 <td>Text</td>
+                <td>Author</td>
+                {% if perms.news.change_post or perms.news.delete_post %}
+                <td>Actions</td>
+                {% endif %}
             </tr>
 
             {% for post in posts %}
@@ -31,6 +42,21 @@ Posts
                 <td>{{ post.title|censor_text }}</td>
                 <td>{{ post.dateCreation }}</td>
                 <td>{{ post.text|truncatechars:20|censor_text }}</td>
+                <td>{{ post.author }}</td>
+                <td>
+                {% if perms.news.change_post and post.categoryType == 'NW' and post.author == request.user.author %}
+                <a href="{% url 'news_edit' pk=post.id %}">Edit news</a>
+                {% endif %}
+                {% if perms.news.delete_post and post.categoryType == 'NW' and post.author == request.user.author %}
+                <a href="{% url 'news_delete' post.id %}">Delete news</a>
+                {% endif %}
+                {% if perms.news.change_post and post.categoryType == 'AR' and post.author == request.user.author %}
+                <a href="{% url 'articles_edit' pk=post.id %}">Edit article</a>
+                {% endif %}
+                {% if perms.news.delete_post and post.categoryType == 'AR' and post.author == request.user.author %}
+                <a href="{% url 'articles_delete' post.id %}">Delete article</a>
+                {% endif %}
+                </td>
             </tr>
             {% endfor %}
 
