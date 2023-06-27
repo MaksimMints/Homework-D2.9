@@ -9,21 +9,19 @@ Posts
 {% endblock title %}
 
 {% block content %}
-    <h1>All News</h1>
-
-    {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
-    <form action="" method="get">
-        {{ filterset.form.as_p }}
-        <input type="submit" value="Search" />
-    </form>
-    <hr>
-
-    {# Теперь будем проверять не request.user.is_authenticated, на конкретные права #}
-    {% if perms.news.add_post %}
-    <a href="{% url 'news_create' %}">Add News</a>
-    <hr>
-    <a href="{% url 'articles_create' %}">Add Article</a>
+    <h1>{{ category.name }}</h1>
+    {% if is_not_subscriber %}
+        <p class="text-center">
+            <a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Subcribe to category</a>
+        </p>
     {% endif %}
+    {% if is_in_subscriber %}
+        <h2>Your are subcribed to this category</h2>
+        <p class="text-center">
+            <a href="{% url 'unsubscribe' category.id %}" class="btn btn-secondary btn-sm">Unsubcribe</a>
+        </p>
+    {% endif %}
+
 
     {% if posts %}
         <table>
@@ -38,11 +36,11 @@ Posts
                 {% endif %}
             </tr>
 
-            {% for post in posts %}
+            {% for post in category_news_list %}
             <tr>
-                <td>{{ post.title|censor_text }}</td>
+                <td>{{ post.title}}</td>
                 <td>{{ post.dateCreation }}</td>
-                <td>{{ post.text|truncatechars:20|censor_text }}</td>
+                <td>{{ post.text|truncatechars:20}}</td>
                 <td>
                     {% for cat in post.postCategory.all %}
                         <a href="{% url 'category_list' cat.id %}">{{ cat.name }}</a>

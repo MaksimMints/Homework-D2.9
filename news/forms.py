@@ -1,6 +1,7 @@
 from django import forms
 from .models import Post
 
+
 from django.core.exceptions import ValidationError
 
 class NewsForm(forms.ModelForm):
@@ -10,6 +11,7 @@ class NewsForm(forms.ModelForm):
             'title',
             'text',
             # 'author',
+            'postCategory',
         ]
 
 class ArticleForm(forms.ModelForm):
@@ -19,6 +21,7 @@ class ArticleForm(forms.ModelForm):
             'title',
             'text',
             # 'author'
+            'postCategory',
         ]
 
     # def clean(self):
