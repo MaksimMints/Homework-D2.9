@@ -161,7 +161,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 SITE_URL = 'http://127.0.0.1:8000'
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = "forsendfromNP@yandex.ru"
@@ -174,3 +174,9 @@ DEFAULT_FROM_EMAIL = "forsendfromNP@yandex.ru"
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

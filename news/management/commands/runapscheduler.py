@@ -16,28 +16,28 @@ from news.models import Post, Category
 logger = logging.getLogger(__name__)
 
 
-def my_job():
-    # Your job processing logic here...
-    today = datetime.datetime.now()
-    last_week = today - datetime.timedelta(days=7)
-    posts = Post.objects.filter(dateCreation__gte=last_week)
-    categories = set(posts.values_list('postCategory__name', flat=True))
-    subscribers = set(Category.objects.filter(name__in=categories).values_list('subscribers__email', flat=True))
-    html_content = render_to_string(
-        'daily_post.html',
-        {
-            'link': settings.SITE_URL,
-            'posts': posts,
-        }
-    )
-    msg = EmailMultiAlternatives(
-        subject='Posts for the week',
-        body='',
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=subscribers,
-    )
-    msg.attach_alternative(html_content, 'text/html')
-    msg.send()
+# def my_job():
+#     # Your job processing logic here...
+#     today = datetime.datetime.now()
+#     last_week = today - datetime.timedelta(days=7)
+#     posts = Post.objects.filter(dateCreation__gte=last_week)
+#     categories = set(posts.values_list('postCategory__name', flat=True))
+#     subscribers = set(Category.objects.filter(name__in=categories).values_list('subscribers__email', flat=True))
+#     html_content = render_to_string(
+#         'daily_post.html',
+#         {
+#             'link': settings.SITE_URL,
+#             'posts': posts,
+#         }
+#     )
+#     msg = EmailMultiAlternatives(
+#         subject='Posts for the week',
+#         body='',
+#         from_email=settings.DEFAULT_FROM_EMAIL,
+#         to=subscribers,
+#     )
+#     msg.attach_alternative(html_content, 'text/html')
+#     msg.send()
 
 # The `close_old_connections` decorator ensures that database connections,
 # that have become unusable or are obsolete, are closed before and after your
