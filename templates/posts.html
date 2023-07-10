@@ -8,83 +8,85 @@
 Posts
 {% endblock title %}
 
-{% block content %}
-    <h1>All News</h1>
 
-    {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
-    <form action="" method="get">
-        {{ filterset.form.as_p }}
-        <input type="submit" value="Search" />
-    </form>
-    <hr>
+        {% block content %}
+            <h1>All News</h1>
 
-    {# Теперь будем проверять не request.user.is_authenticated, на конкретные права #}
-    {% if perms.news.add_post %}
-    <a href="{% url 'news_create' %}">Add News</a>
-    <hr>
-    <a href="{% url 'articles_create' %}">Add Article</a>
-    {% endif %}
+            {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+            <form action="" method="get">
+                {{ filterset.form.as_p }}
+                <input type="submit" value="Search" />
+            </form>
+            <hr>
 
-    {% if posts %}
-        <table>
-            <tr>
-                <td>Title</td>
-                <td>DateCreation</td>
-                <td>Text</td>
-                <td>Category</td>
-                <td>Author</td>
-                {% if perms.news.change_post or perms.news.delete_post %}
-                <td>Actions</td>
-                {% endif %}
-            </tr>
+            {# Теперь будем проверять не request.user.is_authenticated, на конкретные права #}
+            {% if perms.news.add_post %}
+            <a href="{% url 'news_create' %}">Add News</a>
+            <hr>
+            <a href="{% url 'articles_create' %}">Add Article</a>
+            {% endif %}
 
-            {% for post in posts %}
-            <tr>
-                <td>{{ post.title|censor_text }}</td>
-                <td>{{ post.dateCreation }}</td>
-                <td>{{ post.text|truncatechars:20|censor_text }}</td>
-                <td>
-                    {% for cat in post.postCategory.all %}
-                        <a href="{% url 'category_list' cat.id %}">{{ cat.name }}</a>
+            {% if posts %}
+                <table>
+                    <tr>
+                        <td>Title</td>
+                        <td>DateCreation</td>
+                        <td>Text</td>
+                        <td>Category</td>
+                        <td>Author</td>
+                        {% if perms.news.change_post or perms.news.delete_post %}
+                        <td>Actions</td>
+                        {% endif %}
+                    </tr>
+
+                    {% for post in posts %}
+                    <tr>
+                        <td>{{ post.title|censor_text }}</td>
+                        <td>{{ post.dateCreation }}</td>
+                        <td>{{ post.text|truncatechars:20|censor_text }}</td>
+                        <td>
+                            {% for cat in post.postCategory.all %}
+                                <a href="{% url 'category_list' cat.id %}">{{ cat.name }}</a>
+                            {% endfor %}
+                        </td>
+                        <td>{{ post.author }}</td>
+                        <td>
+                        {% if perms.news.change_post and post.categoryType == 'NW' and post.author == request.user.author %}
+                        <a href="{% url 'news_edit' pk=post.id %}">Edit news</a>
+                        {% endif %}
+                        {% if perms.news.delete_post and post.categoryType == 'NW' and post.author == request.user.author %}
+                        <a href="{% url 'news_delete' post.id %}">Delete news</a>
+                        {% endif %}
+                        {% if perms.news.change_post and post.categoryType == 'AR' and post.author == request.user.author %}
+                        <a href="{% url 'articles_edit' pk=post.id %}">Edit article</a>
+                        {% endif %}
+                        {% if perms.news.delete_post and post.categoryType == 'AR' and post.author == request.user.author %}
+                        <a href="{% url 'articles_delete' post.id %}">Delete article</a>
+                        {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
-                </td>
-                <td>{{ post.author }}</td>
-                <td>
-                {% if perms.news.change_post and post.categoryType == 'NW' and post.author == request.user.author %}
-                <a href="{% url 'news_edit' pk=post.id %}">Edit news</a>
+
+                </table>
+            {% endif %}
+
+            {% if page_obj.has_previous %}
+                <a href="?{% url_replace page=1 %}">1</a>
+                {% if page_obj.previous_page_number != 1 %}
+                    ...
+                    <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
                 {% endif %}
-                {% if perms.news.delete_post and post.categoryType == 'NW' and post.author == request.user.author %}
-                <a href="{% url 'news_delete' post.id %}">Delete news</a>
-                {% endif %}
-                {% if perms.news.change_post and post.categoryType == 'AR' and post.author == request.user.author %}
-                <a href="{% url 'articles_edit' pk=post.id %}">Edit article</a>
-                {% endif %}
-                {% if perms.news.delete_post and post.categoryType == 'AR' and post.author == request.user.author %}
-                <a href="{% url 'articles_delete' post.id %}">Delete article</a>
-                {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
+            {% endif %}
 
-        </table>
-    {% endif %}
+            {{ page_obj.number }}
 
-    {% if page_obj.has_previous %}
-        <a href="?{% url_replace page=1 %}">1</a>
-        {% if page_obj.previous_page_number != 1 %}
-            ...
-            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
-        {% endif %}
-    {% endif %}
+            {% if page_obj.has_next %}
+               <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+               {% if paginator.num_pages != page_obj.next_page_number %}
+                   ...
+                   <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+               {% endif %}
+           {% endif %}
 
-    {{ page_obj.number }}
+        {% endblock content %}
 
-    {% if page_obj.has_next %}
-       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
-       {% if paginator.num_pages != page_obj.next_page_number %}
-           ...
-           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
-       {% endif %}
-   {% endif %}
-
-{% endblock content %}
