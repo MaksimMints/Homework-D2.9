@@ -59,6 +59,9 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -93,6 +96,118 @@ AUTHENTICATION_BACKENDS = [
 
 WSGI_APPLICATION = 'NewsPaper.wsgi.application'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+        'info': {
+            'format': '{asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+        'warning': {
+            'format': '{asctime} {levelname} {pathname} {message}',
+            'style': '{',
+        },
+        'error': {
+            'format': '{asctime} {levelname} {pathname} {exc_info} {message}',
+            'style': '{',
+        },
+        'security': {
+            'format': '{asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+
+    },
+    'handlers': {
+        'general': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': 'general.log',
+            'formatter': 'info'
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'error'
+        },
+        'consoledebug': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'consolewarning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning',
+        },
+        'consoleerror': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'warning',
+        },
+        'security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'security',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['consoledebug', 'consolewarning', 'consoleerror', 'general'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['errors', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['errors', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['errors'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['errors'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security.*': {
+            'handlers': ['security'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -170,6 +285,10 @@ EMAIL_HOST_PASSWORD = "enrozgeflcxqbsby"
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
+ADMINS = [
+    ('Admin', 'forsendfromNP@yandex.ru'),
+]
+
 DEFAULT_FROM_EMAIL = "forsendfromNP@yandex.ru"
 
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
@@ -189,3 +308,7 @@ CACHES = {
         'TIMEOUT': 60,
     }
 }
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]
